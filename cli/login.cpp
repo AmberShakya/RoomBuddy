@@ -3,7 +3,7 @@
 
 using namespace std;
 
-int main()
+void login()
 {
     // Define the username and password
     string username = "admin";
@@ -25,6 +25,6 @@ int main()
     {
         cout << "Incorrect username or password." << endl;
     }
-
-    return 0;
 }
+
+int main() {}
