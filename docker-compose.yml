@@ -16,8 +16,8 @@ services:
     depends_on:
       - db
     restart: always
-    networks:
-      - friend-finder-network
+#    networks:
+#      - friend-finder-network
 
   db:
     env_file:
@@ -27,7 +27,7 @@ services:
     image: mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_password}
+      MYSQL_ROOT_PASSWORD: ${DB_root_password}
       MYSQL_USER: ${DB_user}
       MYSQL_PASSWORD: ${DB_password}
       MYSQL_DATABASE: ${DB_database}
@@ -35,8 +35,8 @@ services:
       - ${DB_PORT}
     ports:
       - ${DB_PORT}:3306
-    networks:
-      - friend-finder-network
+#    networks:
+#      - friend-finder-network
     volumes:
       - mysql-data:/var/lib/mysql
       - ./init.sql:/data/application/init.sql
@@ -46,7 +46,7 @@ volumes:
   mysql-data:
     external: false
 
-networks:
-  friend-finder-network:
-    external: false
-    name: friend-finder-network
+#networks:
+#  friend-finder-network:
+#    external: false
+#    name: friend-finder-network
