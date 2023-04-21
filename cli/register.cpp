@@ -29,18 +29,53 @@ void getNewUserData()
     string dept;
     string email;
     int phoneNum;
-    cout << "\nName:";
+
+    cout << "\nName: ";
     cin >> name;
-    cout << "\nGender (1 for male, 0 for female):";
-    cin >> gender;
-    cout << "\nRollNO:";
-    cin >> rollno;
-    cout << "\nDept:";
+
+    // Input validation for gender (allow only 0 or 1)
+    cout << "\nGender (1 for male, 0 for female): ";
+    while (true)
+    {
+        if (!(cin >> gender))
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input. Enter 1 for male or 0 for female: ";
+        }
+        else if (gender != 0 && gender != 1)
+        {
+            cout << "Invalid input. Enter 1 for male or 0 for female: ";
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    // Input validation for rollno and phoneNum
+    cout << "\nRollNO: ";
+    while (!(cin >> rollno))
+    {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Invalid input. Enter a valid integer: ";
+    }
+
+    cout << "\nDept: ";
     cin >> dept;
-    cout << "\nemail:";
+
+    cout << "\nEmail: ";
     cin >> email;
-    cout << "\nphoneNUm:";
-    cin >> phoneNum;
+
+    cout << "\nPhone Number: ";
+    while (!(cin >> phoneNum))
+    {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Invalid input. Enter a valid integer: ";
+    }
+
     cout << "*********************************************************";
 
 #ifdef _WIN32 // to clear the terminal screen
