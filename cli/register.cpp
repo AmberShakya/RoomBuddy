@@ -1,23 +1,97 @@
 #include <iostream>
 #include <vector>
+#include <sqlite3.h>
 using namespace std;
 
-class User
+// Function to handle errors thrown by SQLite
+static int errorHandler(void *NotUsed, int errorCode, const char *errorMessage)
 {
-private:
-    string name;
-    bool gender; // 1 if male <> 0 if female Assuming there are only 2 genders
-    int rollno;
-    string dept;
-    string email;
-    int phoneNum;
-    vector<string> interests;
+    cerr << "SQLite error: " << errorMessage << endl;
+    return 0;
+}
 
-public:
-    // Constructor
-    User(string name, bool gender, int rollno, string dept, string email, int phoneNum, vector<string> interests)
-        : name(name), gender(gender), rollno(rollno), dept(dept), email(email), phoneNum(phoneNum), interests(interests) {}
-};
+// Function to insert user data into the database
+void insertUserData(string name, bool gender, int rollno, string dept, string email, int phoneNum, vector<string> interests)
+{
+    // Open the database
+    sqlite3 *db;
+    int result = sqlite3_open("user_data.db", &db);
+
+    if (result != SQLITE_OK)
+    {
+        cerr << "Error opening database: " << sqlite3_errmsg(db) << endl;
+        sqlite3_close(db);
+        return;
+    }
+
+    // Prepare the SQL statement
+    sqlite3_stmt *stmt;
+    result = sqlite3_prepare_v2(db, "INSERT INTO users (name, gender, rollno, dept, email, phoneNum) VALUES (?, ?, ?, ?, ?, ?)", -1, &stmt, NULL);
+
+    if (result != SQLITE_OK)
+    {
+        cerr << "Error preparing SQL statement: " << sqlite3_errmsg(db) << endl;
+        sqlite3_close(db);
+        return;
+    }
+
+    // Bind the parameters to the statement
+    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt, 2, gender);
+    sqlite3_bind_int(stmt, 3, rollno);
+    sqlite3_bind_text(stmt, 4, dept.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 5, email.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt, 6, phoneNum);
+
+    // Execute the statement
+    result = sqlite3_step(stmt);
+
+    if (result != SQLITE_DONE)
+    {
+        cerr << "Error inserting data into database: " << sqlite3_errmsg(db) << endl;
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        return;
+    }
+
+    // Get the ID of the last inserted row
+    int userId = sqlite3_last_insert_rowid(db);
+
+    // Prepare the SQL statement to insert interests
+    result = sqlite3_prepare_v2(db, "INSERT INTO interests (user_id, interest) VALUES (?, ?)", -1, &stmt, NULL);
+
+    if (result != SQLITE_OK)
+    {
+        cerr << "Error preparing SQL statement: " << sqlite3_errmsg(db) << endl;
+        sqlite3_close(db);
+        return;
+    }
+
+    // Bind the user ID to the statement
+    sqlite3_bind_int(stmt, 1, userId);
+
+    // Insert each interest
+    for (const string &interest : interests)
+    {
+        sqlite3_bind_text(stmt, 2, interest.c_str(), -1, SQLITE_TRANSIENT);
+
+        result = sqlite3_step(stmt);
+
+        if (result != SQLITE_DONE)
+        {
+            cerr << "Error inserting data into database: " << sqlite3_errmsg(db) << endl;
+            sqlite3_finalize(stmt);
+            sqlite3_close(db);
+            return;
+        }
+
+        sqlite3_reset(stmt);
+    }
+
+    // Finalize the statement and close the database
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+}
 
 void getNewUserData()
 {
@@ -106,7 +180,7 @@ void getNewUserData()
         interests.push_back(int_list[choice]);
     }
     cout << "*********************************************************";
-    User newUser(name, gender, rollno, dept, email, phoneNum, interests);
+    
 
     // push to DB idk how
 }
