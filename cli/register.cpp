@@ -8,57 +8,93 @@
 //  #include <openssl/evp.h>
 
 using namespace std;
-
-int insertStudentData(const string name, bool gender, int rollno, const string dept,
-                      const string email, const string password, const string interest, bool available)
+std::string GetInterest()
 {
-    sqlite3 *db;
-    int rc = sqlite3_open("student.db", &db); // student.db is the name of the database file
-
-    if (rc)
+    string hobies[] = {"basketball", "volleyball", "football", "swimming", "running", "cycling", "cricket", "chess", "Music", "Singing", "AI & machine learning", "web & app development", "computer programming", "Blockchain", "Video Games", "Traveling and exploring new places", "painting", "drawing", "photography", "graphic design", "Watching movies", "Watching series"};
+    int num_hobies = sizeof(hobies) / sizeof(hobies[0]);
+    vector<int> choices;
+    int c;
+    string result = "";
+    // to clear the terminal screen
+#ifdef defined(_WIN32) || defined(WIN32)
+    system("cls");
+#else
+    system("clear");
+#endif
+    for (int i = 0; i < num_hobies; i++)
     {
-        sqlite3_close(db);
-        return -1; // Failed to open database
+        cout << "\n"
+             << i + 1 << "." << hobies[i];
     }
 
-    const char *sql = "CREATE TABLE IF NOT EXISTS Students (Name TEXT, Gender INT, RollNo INT PRIMARY KEY, Dept TEXT, Email TEXT, Password TEXT, Interest TEXT, Available INT)";
-    rc = sqlite3_exec(db, sql, NULL, 0, NULL);
-    if (rc != SQLITE_OK)
+    cout << "\nEnter your Choices(ex 1 3 7 etc.. Press 0. to exit):\n";
+    do
     {
-        sqlite3_close(db);
-        return -1; // Failed to create table
-    }
-
-    sql = "INSERT INTO Students (Name, Gender, RollNo, Dept, Email, Password, Interest, Available) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    sqlite3_stmt *stmt;
-    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-    if (rc != SQLITE_OK)
+        cout << ":";
+        cin >> c;
+        choices.push_back(c);
+    } while (c != 0);
+    int num_choices = sizeof(choices) / sizeof(choices[0]);
+    int j = 0; // 1 4 7 9  - 1001001010
+    for (int i = 0; i < num_choices; i++)
     {
-        sqlite3_close(db);
-        return -1; // Failed to prepare statement
+        if (i == choices[j] - 1)
+        {
+            result = result + "1";
+            j++;
+        }
     }
-
-    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_int(stmt, 2, gender ? 1 : 0);
-    sqlite3_bind_int(stmt, 3, rollno);
-    sqlite3_bind_text(stmt, 4, dept.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 5, email.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 6, password.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 7, interest.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_int(stmt, 8, available ? 1 : 0);
-
-    rc = sqlite3_step(stmt);
-    if (rc != SQLITE_DONE)
-    {
-        sqlite3_finalize(stmt);
-        sqlite3_close(db);
-        return -1; // Failed to execute statement
-    }
-
-    sqlite3_finalize(stmt);
-    sqlite3_close(db);
-    return 0; // Success
 }
+// int insertStudentData(const string name, bool gender, int rollno, const string dept,
+//                       const string email, const string password, const string interest, bool available)
+// {
+//     sqlite3 *db;
+//     int rc = sqlite3_open("student.db", &db); // student.db is the name of the database file
+
+//     if (rc)
+//     {
+//         sqlite3_close(db);
+//         return -1; // Failed to open database
+//     }
+
+//     const char *sql = "CREATE TABLE IF NOT EXISTS Students (Name TEXT, Gender INT, RollNo INT PRIMARY KEY, Dept TEXT, Email TEXT, Password TEXT, Interest TEXT, Available INT)";
+//     rc = sqlite3_exec(db, sql, NULL, 0, NULL);
+//     if (rc != SQLITE_OK)
+//     {
+//         sqlite3_close(db);
+//         return -1; // Failed to create table
+//     }
+
+//     sql = "INSERT INTO Students (Name, Gender, RollNo, Dept, Email, Password, Interest, Available) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+//     sqlite3_stmt *stmt;
+//     rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+//     if (rc != SQLITE_OK)
+//     {
+//         sqlite3_close(db);
+//         return -1; // Failed to prepare statement
+//     }
+
+//     sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC);
+//     sqlite3_bind_int(stmt, 2, gender ? 1 : 0);
+//     sqlite3_bind_int(stmt, 3, rollno);
+//     sqlite3_bind_text(stmt, 4, dept.c_str(), -1, SQLITE_STATIC);
+//     sqlite3_bind_text(stmt, 5, email.c_str(), -1, SQLITE_STATIC);
+//     sqlite3_bind_text(stmt, 6, password.c_str(), -1, SQLITE_STATIC);
+//     sqlite3_bind_text(stmt, 7, interest.c_str(), -1, SQLITE_STATIC);
+//     sqlite3_bind_int(stmt, 8, available ? 1 : 0);
+
+//     rc = sqlite3_step(stmt);
+//     if (rc != SQLITE_DONE)
+//     {
+//         sqlite3_finalize(stmt);
+//         sqlite3_close(db);
+//         return -1; // Failed to execute statement
+//     }
+
+//     sqlite3_finalize(stmt);
+//     sqlite3_close(db);
+//     return 0; // Success
+// }
 
 void getNewUserData()
 {
@@ -147,8 +183,8 @@ void getNewUserData()
     // interest choosing function to be implemented
 
     // push to DB idk how
-    insertStudentData(name, gender, rollno, dept,
-                      email, password, interest, available);
+    // insertStudentData(name, gender, rollno, dept,email, password, interest, available);
+    interest = GetInterest();
 }
 int main()
 {
