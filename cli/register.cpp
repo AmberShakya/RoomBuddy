@@ -19,11 +19,14 @@ string getInterest()
     int c;
 
     // to clear the terminal screen
-#ifdef defined(_WIN32) || defined(_WIN32)
+#ifdef _WIN32
+    system("cls");
+#elif _WIN64
     system("cls");
 #else
     system("clear");
 #endif
+
     for (int i = 0; i < num_hobies; i++)
     {
         cout << "\n"
