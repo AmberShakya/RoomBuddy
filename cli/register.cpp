@@ -4,19 +4,22 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+#include <algorithm>
+#include <bitset>
+
 // install from https://www.openssl.org/source/
 //  #include <openssl/evp.h>
 
 using namespace std;
-std::string GetInterest()
+string getInterest()
 {
     string hobies[] = {"basketball", "volleyball", "football", "swimming", "running", "cycling", "cricket", "chess", "Music", "Singing", "AI & machine learning", "web & app development", "computer programming", "Blockchain", "Video Games", "Traveling and exploring new places", "painting", "drawing", "photography", "graphic design", "Watching movies", "Watching series"};
     int num_hobies = sizeof(hobies) / sizeof(hobies[0]);
-    vector<int> choices;
+    int choices[22] = {0};
     int c;
-    string result = "";
+
     // to clear the terminal screen
-#ifdef defined(_WIN32) || defined(WIN32)
+#ifdef defined(_WIN32) || defined(_WIN32)
     system("cls");
 #else
     system("clear");
@@ -30,21 +33,31 @@ std::string GetInterest()
     cout << "\nEnter your Choices(ex 1 3 7 etc.. Press 0. to exit):\n";
     do
     {
-        cout << ":";
+        cout << "\nEnter choice num:";
         cin >> c;
-        choices.push_back(c);
-    } while (c != 0);
-    int num_choices = sizeof(choices) / sizeof(choices[0]);
-    int j = 0; // 1 4 7 9  - 1001001010
-    for (int i = 0; i < num_choices; i++)
-    {
-        if (i == choices[j] - 1)
+        if (c > 0 && c <= num_hobies)
         {
-            result = result + "1";
-            j++;
+            choices[c - 1] = 1;
         }
+        else if (c == 0)
+        {
+            break;
+        }
+        else
+        {
+            cout << "\nenter valid choice";
+        }
+        //
+    } while (c != 0);
+    string result = "";
+    for (int i = 0; i < num_hobies; i++)
+    {
+        char k = choices[i] == 1 ? ('1') : ('0');
+        result = result + k;
     }
+    return result;
 }
+
 // int insertStudentData(const string name, bool gender, int rollno, const string dept,
 //                       const string email, const string password, const string interest, bool available)
 // {
@@ -98,6 +111,7 @@ std::string GetInterest()
 
 void getNewUserData()
 {
+
     cout << "*********************************************************";
     cout << "\n\n\t\tSIGN UP";
     string name;
@@ -184,9 +198,13 @@ void getNewUserData()
 
     // push to DB idk how
     // insertStudentData(name, gender, rollno, dept,email, password, interest, available);
-    interest = GetInterest();
+    interest = getInterest(); // getting a bit stream of interest
+    // cout << interest;
+
+    // collected all data : push to db now
 }
 int main()
 {
+
     getNewUserData();
 }
