@@ -1,96 +1,63 @@
 #include <iostream>
 #include <vector>
 #include <sqlite3.h>
+#include <string>
+#include <sstream>
+#include <iomanip>
+// install from https://www.openssl.org/source/
+//  #include <openssl/evp.h>
+
 using namespace std;
 
-// Function to handle errors thrown by SQLite
-static int errorHandler(void *NotUsed, int errorCode, const char *errorMessage)
+int insertStudentData(const string name, bool gender, int rollno, const string dept,
+                      const string email, const string password, const string interest, bool available)
 {
-    cerr << "SQLite error: " << errorMessage << endl;
-    return 0;
-}
-
-// Function to insert user data into the database
-void insertUserData(string name, bool gender, int rollno, string dept, string email, int phoneNum, vector<string> interests)
-{
-    // Open the database
     sqlite3 *db;
-    int result = sqlite3_open("user_data.db", &db);
+    int rc = sqlite3_open("student.db", &db); // student.db is the name of the database file
 
-    if (result != SQLITE_OK)
+    if (rc)
     {
-        cerr << "Error opening database: " << sqlite3_errmsg(db) << endl;
         sqlite3_close(db);
-        return;
+        return -1; // Failed to open database
     }
 
-    // Prepare the SQL statement
+    const char *sql = "CREATE TABLE IF NOT EXISTS Students (Name TEXT, Gender INT, RollNo INT PRIMARY KEY, Dept TEXT, Email TEXT, Password TEXT, Interest TEXT, Available INT)";
+    rc = sqlite3_exec(db, sql, NULL, 0, NULL);
+    if (rc != SQLITE_OK)
+    {
+        sqlite3_close(db);
+        return -1; // Failed to create table
+    }
+
+    sql = "INSERT INTO Students (Name, Gender, RollNo, Dept, Email, Password, Interest, Available) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     sqlite3_stmt *stmt;
-    result = sqlite3_prepare_v2(db, "INSERT INTO users (name, gender, rollno, dept, email, phoneNum) VALUES (?, ?, ?, ?, ?, ?)", -1, &stmt, NULL);
-
-    if (result != SQLITE_OK)
+    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    if (rc != SQLITE_OK)
     {
-        cerr << "Error preparing SQL statement: " << sqlite3_errmsg(db) << endl;
         sqlite3_close(db);
-        return;
+        return -1; // Failed to prepare statement
     }
 
-    // Bind the parameters to the statement
-    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_TRANSIENT);
-    sqlite3_bind_int(stmt, 2, gender);
+    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_int(stmt, 2, gender ? 1 : 0);
     sqlite3_bind_int(stmt, 3, rollno);
-    sqlite3_bind_text(stmt, 4, dept.c_str(), -1, SQLITE_TRANSIENT);
-    sqlite3_bind_text(stmt, 5, email.c_str(), -1, SQLITE_TRANSIENT);
-    sqlite3_bind_int(stmt, 6, phoneNum);
+    sqlite3_bind_text(stmt, 4, dept.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 5, email.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 6, password.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 7, interest.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_int(stmt, 8, available ? 1 : 0);
 
-    // Execute the statement
-    result = sqlite3_step(stmt);
-
-    if (result != SQLITE_DONE)
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE)
     {
-        cerr << "Error inserting data into database: " << sqlite3_errmsg(db) << endl;
         sqlite3_finalize(stmt);
         sqlite3_close(db);
-        return;
+        return -1; // Failed to execute statement
     }
 
-    // Get the ID of the last inserted row
-    int userId = sqlite3_last_insert_rowid(db);
-
-    // Prepare the SQL statement to insert interests
-    result = sqlite3_prepare_v2(db, "INSERT INTO interests (user_id, interest) VALUES (?, ?)", -1, &stmt, NULL);
-
-    if (result != SQLITE_OK)
-    {
-        cerr << "Error preparing SQL statement: " << sqlite3_errmsg(db) << endl;
-        sqlite3_close(db);
-        return;
-    }
-
-    // Bind the user ID to the statement
-    sqlite3_bind_int(stmt, 1, userId);
-
-    // Insert each interest
-    for (const string &interest : interests)
-    {
-        sqlite3_bind_text(stmt, 2, interest.c_str(), -1, SQLITE_TRANSIENT);
-
-        result = sqlite3_step(stmt);
-
-        if (result != SQLITE_DONE)
-        {
-            cerr << "Error inserting data into database: " << sqlite3_errmsg(db) << endl;
-            sqlite3_finalize(stmt);
-            sqlite3_close(db);
-            return;
-        }
-
-        sqlite3_reset(stmt);
-    }
-
-    // Finalize the statement and close the database
     sqlite3_finalize(stmt);
     sqlite3_close(db);
+    return 0; // Success
 }
 
 void getNewUserData()
@@ -103,6 +70,8 @@ void getNewUserData()
     string dept;
     string email;
     int phoneNum;
+    string interest = "";
+    bool available = false;
 
     cout << "\nName: ";
     cin >> name;
@@ -149,6 +118,23 @@ void getNewUserData()
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cout << "Invalid input. Enter a valid integer: ";
     }
+    string password, password_confirmation;
+
+    do
+    {
+        cout << "\nPlease enter your password: ";
+        cin >> password;
+
+        cout << "\nPlease confirm your password: ";
+        cin >> password_confirmation;
+
+        if (password != password_confirmation)
+        {
+            cout << "\tPasswords do not match. Please try again." << endl;
+        }
+    } while (password != password_confirmation);
+
+    cout << "Password confirmed!" << endl;
 
     cout << "*********************************************************";
 
@@ -158,31 +144,11 @@ void getNewUserData()
     system("clear");
 #endif
 
-    cout << "*********************************************************";
-    cout << "\n1.Cricket 2.football 3.hockey";
-
-    vector<string> interests;
-    vector<string> int_list;
-    int_list.push_back("Cricket");
-    int_list.push_back("Football");
-    int_list.push_back("doodsa");
-
-    int choice = 1;
-    while (choice != 0)
-    {
-
-        cout << "\nEnter interest (0 to stop): ";
-        cin >> choice;
-        if (choice == 0)
-        {
-            break;
-        }
-        interests.push_back(int_list[choice]);
-    }
-    cout << "*********************************************************";
-    
+    // interest choosing function to be implemented
 
     // push to DB idk how
+    insertStudentData(name, gender, rollno, dept,
+                      email, password, interest, available);
 }
 int main()
 {
