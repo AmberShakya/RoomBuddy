@@ -29,7 +29,7 @@ public:
         return score;
     }
 
-    string getInterests()
+    string getUserInterests()
     {
         return interests;
     }
@@ -49,8 +49,8 @@ void scoreUsers(vector<User>& userList)
         for (int j = i + 1; j < userList.size(); j++) // compare with all other users after i
         {
             int commonInterests = 0;
-            string iInterests = userList[i].getInterests();
-            string jInterests = userList[j].getInterests();
+            string iInterests = userList[i].getUserInterests();
+            string jInterests = userList[j].getUserInterests();
 
             for (int k = 0; k < iInterests.length() && k < jInterests.length(); k++) // count number of common interests
             {
