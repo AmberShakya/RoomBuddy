@@ -3,6 +3,7 @@
 #include <mongocxx/client.hpp>
 #include <mongocxx/instance.hpp>
 #include <mongocxx/uri.hpp>
+using namespace std;
 
 bool signup(string username, string password, int Phoneno, int Age, char Gender, string Interest1, string Interest2)
 {
