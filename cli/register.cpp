@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <bitset>
-
+#include <openssl/sha.h>
 // install from https://www.openssl.org/source/
 //  #include <openssl/evp.h>
 
