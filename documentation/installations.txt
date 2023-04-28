@@ -3,3 +3,4 @@ brew install bsoncxx
 brew install openssl
 openssl version
 
+https://vcpkg.io/en/getting-started.html
