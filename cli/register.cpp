@@ -112,6 +112,44 @@ int insertStudentData(const string name, bool gender, int rollno, const string d
     return 0; // Success
 }
 
+bool isRollNoExists(int rollno)
+{
+    sqlite3 *db;
+    int rc = sqlite3_open("student.db", &db); // student.db is the name of the database file
+
+    if (rc)
+    {
+        sqlite3_close(db);
+        return false; // Failed to open database
+    }
+
+    const char *sql = "SELECT COUNT(*) FROM Students WHERE RollNo = ?";
+    sqlite3_stmt *stmt;
+    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    if (rc != SQLITE_OK)
+    {
+        sqlite3_close(db);
+        return false; // Failed to prepare statement
+    }
+
+    sqlite3_bind_int(stmt, 1, rollno);
+
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_ROW)
+    {
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        return false; // Failed to execute statement
+    }
+
+    int count = sqlite3_column_int(stmt, 0);
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+
+    return (count > 0);
+}
+
 void getNewUserData()
 {
 
@@ -157,6 +195,11 @@ void getNewUserData()
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cout << "Invalid input. Enter a valid integer: ";
     }
+    if (isRollNoExists(rollno))
+    {
+        cout << "User with same rollnum exists";
+        exit(0);
+    }
 
     cout << "\nDept: ";
     cin >> dept;
@@ -164,13 +207,6 @@ void getNewUserData()
     cout << "\nEmail: ";
     cin >> email;
 
-    cout << "\nPhone Number: ";
-    while (!(cin >> phoneNum))
-    {
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cout << "Invalid input. Enter a valid integer: ";
-    }
     string password, password_confirmation;
 
     do
@@ -197,11 +233,16 @@ void getNewUserData()
     system("clear");
 #endif
 
-    // interest choosing function to be implemented
-
-    // push to DB idk how
-    // insertStudentData(name, gender, rollno, dept,email, password, interest, available);
     interest = getInterest(); // getting a bit stream of interest
+    if (insertStudentData(name, gender, rollno, dept, email, password, interest, available) == 0)
+    {
+        cout << "\nsuccessfully inserted";
+    }
+    else
+    {
+        cout << "\nFailed to insert";
+    }
+
     // cout << interest;
 
     // collected all data : push to db now
