@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <bitset>
-#include <openssl/sha.h>
+// #include <openssl/sha.h>
 // install from https://www.openssl.org/source/
 //  #include <openssl/evp.h>
 
@@ -33,10 +33,10 @@ string getInterest()
              << i + 1 << "." << hobies[i];
     }
 
-    cout << "\nEnter your Choices(ex 1 3 7 etc.. Press 0. to exit):\n";
+    cout << "\nEnter your Choices(one by one - Press 0. to exit):\n";
     do
     {
-        cout << "\nEnter choice num:";
+        cout << "\nEnter choice num(0 to exit):";
         cin >> c;
         if (c > 0 && c <= num_hobies)
         {
@@ -61,56 +61,56 @@ string getInterest()
     return result;
 }
 
-// int insertStudentData(const string name, bool gender, int rollno, const string dept,
-//                       const string email, const string password, const string interest, bool available)
-// {
-//     sqlite3 *db;
-//     int rc = sqlite3_open("student.db", &db); // student.db is the name of the database file
+int insertStudentData(const string name, bool gender, int rollno, const string dept,
+                      const string email, const string password, const string interest, bool available)
+{
+    sqlite3 *db;
+    int rc = sqlite3_open("student.db", &db); // student.db is the name of the database file
 
-//     if (rc)
-//     {
-//         sqlite3_close(db);
-//         return -1; // Failed to open database
-//     }
+    if (rc)
+    {
+        sqlite3_close(db);
+        return -1; // Failed to open database
+    }
 
-//     const char *sql = "CREATE TABLE IF NOT EXISTS Students (Name TEXT, Gender INT, RollNo INT PRIMARY KEY, Dept TEXT, Email TEXT, Password TEXT, Interest TEXT, Available INT)";
-//     rc = sqlite3_exec(db, sql, NULL, 0, NULL);
-//     if (rc != SQLITE_OK)
-//     {
-//         sqlite3_close(db);
-//         return -1; // Failed to create table
-//     }
+    const char *sql = "CREATE TABLE IF NOT EXISTS Students (Name TEXT, Gender INT, RollNo INT PRIMARY KEY, Dept TEXT, Email TEXT, Password TEXT, Interest TEXT, Available INT)";
+    rc = sqlite3_exec(db, sql, NULL, 0, NULL);
+    if (rc != SQLITE_OK)
+    {
+        sqlite3_close(db);
+        return -1; // Failed to create table
+    }
 
-//     sql = "INSERT INTO Students (Name, Gender, RollNo, Dept, Email, Password, Interest, Available) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-//     sqlite3_stmt *stmt;
-//     rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-//     if (rc != SQLITE_OK)
-//     {
-//         sqlite3_close(db);
-//         return -1; // Failed to prepare statement
-//     }
+    sql = "INSERT INTO Students (Name, Gender, RollNo, Dept, Email, Password, Interest, Available) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    sqlite3_stmt *stmt;
+    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    if (rc != SQLITE_OK)
+    {
+        sqlite3_close(db);
+        return -1; // Failed to prepare statement
+    }
 
-//     sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC);
-//     sqlite3_bind_int(stmt, 2, gender ? 1 : 0);
-//     sqlite3_bind_int(stmt, 3, rollno);
-//     sqlite3_bind_text(stmt, 4, dept.c_str(), -1, SQLITE_STATIC);
-//     sqlite3_bind_text(stmt, 5, email.c_str(), -1, SQLITE_STATIC);
-//     sqlite3_bind_text(stmt, 6, password.c_str(), -1, SQLITE_STATIC);
-//     sqlite3_bind_text(stmt, 7, interest.c_str(), -1, SQLITE_STATIC);
-//     sqlite3_bind_int(stmt, 8, available ? 1 : 0);
+    sqlite3_bind_text(stmt, 1, name.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_int(stmt, 2, gender ? 1 : 0);
+    sqlite3_bind_int(stmt, 3, rollno);
+    sqlite3_bind_text(stmt, 4, dept.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 5, email.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 6, password.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 7, interest.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_int(stmt, 8, available ? 1 : 0);
 
-//     rc = sqlite3_step(stmt);
-//     if (rc != SQLITE_DONE)
-//     {
-//         sqlite3_finalize(stmt);
-//         sqlite3_close(db);
-//         return -1; // Failed to execute statement
-//     }
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE)
+    {
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        return -1; // Failed to execute statement
+    }
 
-//     sqlite3_finalize(stmt);
-//     sqlite3_close(db);
-//     return 0; // Success
-// }
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+    return 0; // Success
+}
 
 void getNewUserData()
 {
