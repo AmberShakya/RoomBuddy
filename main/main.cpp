@@ -1,5 +1,5 @@
 #include <iostream>
-#include <vector>
+#include <string>
 #include <sqlite3.h>
 #include <string>
 #include <sstream>
@@ -9,8 +9,94 @@
 // #include <openssl/sha.h>
 // install from https://www.openssl.org/source/
 //  #include <openssl/evp.h>
-
 using namespace std;
+bool authenticate(int rollno, const string password);
+int login();
+void dashboard(int rollno);
+string getInterest();
+int getNewUserData();
+void initialScreen();
+int insertStudentData(const string name, bool gender, int rollno, const string dept,
+                      const string email, const string password, const string interest, bool available);
+bool isRollNoExists(int rollno);
+
+bool authenticate(int rollno, const string password)
+{
+    sqlite3 *db;
+    int rc = sqlite3_open("student.db", &db); // student.db is the name of the database file
+
+    if (rc)
+    {
+        sqlite3_close(db);
+        return false; // Failed to open database
+    }
+
+    const char *sql = "SELECT Password FROM Students WHERE RollNo = ?";
+    sqlite3_stmt *stmt;
+    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    if (rc != SQLITE_OK)
+    {
+        sqlite3_close(db);
+        return false; // Failed to prepare statement
+    }
+
+    sqlite3_bind_int(stmt, 1, rollno);
+
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_ROW)
+    {
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        return false; // Failed to execute statement
+    }
+
+    const unsigned char *db_password = sqlite3_column_text(stmt, 0);
+    string stored_password((const char *)db_password);
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+
+    return (password == stored_password);
+}
+
+int login()
+{
+#ifdef _WIN32
+    system("cls");
+#elif _WIN64
+    system("cls");
+#else
+    system("clear");
+#endif
+    int rollno;
+    string password;
+
+    cout << "Roll No: ";
+    cin >> rollno;
+
+    cout << "Password: ";
+    cin >> password;
+    if (isRollNoExists(rollno))
+    {
+        if (authenticate(rollno, password))
+        {
+            cout << "Login successful!" << endl;
+            return rollno;
+        }
+        else
+        {
+            cout << "Please Check Your Password again." << endl;
+            return 0;
+        }
+    }
+    else
+    {
+        cout << "\nUser doesnt seem to be on our database..plz check again";
+        return 0;
+    }
+    return rollno;
+}
+
 string getInterest()
 {
     string hobies[] = {"basketball", "volleyball", "football", "swimming", "running", "cycling", "cricket", "chess", "Music", "Singing", "AI & machine learning", "web & app development", "computer programming", "Blockchain", "Video Games", "Traveling and exploring new places", "painting", "drawing", "photography", "graphic design", "Watching movies", "Watching series"};
@@ -245,8 +331,66 @@ int getNewUserData()
         return 0;
     }
 }
+
+void initialScreen()
+{
+#ifdef _WIN32
+    system("cls");
+#elif _WIN64
+    system("cls");
+#else
+    system("clear");
+#endif
+    cout << "**********************";
+    cout << "\n1.login\n2.register0.Exit\n:";
+    int c;
+    cin >> c;
+    int rno;
+    if (c == 1)
+    {
+        rno = login();
+        if (rno == 0)
+        {
+            // initialScreen();
+        }
+    }
+    else if (c == 2)
+    {
+        rno = getNewUserData();
+    }
+    else
+    {
+        cout << "Thanks for using our software";
+        exit(0);
+    }
+
+    if (rno != 0)
+    {
+        dashboard(rno);
+    }
+}
+
+void dashboard(int rollno)
+{
+#ifdef _WIN32
+    system("cls");
+#elif _WIN64
+    system("cls");
+#else
+    system("clear");
+#endif
+    cout << "\n\n1.change interest/2.view match3.signout";
+    int choice;
+    cin >> choice;
+    if (choice == 3)
+    {
+        initialScreen();
+    }
+}
 int main()
 {
 
-    getNewUserData();
+    initialScreen();
+
+    return 0;
 }
