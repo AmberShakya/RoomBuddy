@@ -8,6 +8,9 @@
 #include <bitset>
 #include <unistd.h>
 #include <fstream>
+#include<vector>
+#include<limits>
+
 // #include <openssl/sha.h>
 // install from https://www.openssl.org/source/
 //  #include <openssl/evp.h>
@@ -166,17 +169,20 @@ int login()
         if (authenticate(rollno, password))
         {
             cout << "Login successful!" << endl;
+            sleep(1);
             return rollno;
         }
         else
         {
             cout << "Please Check Your Password again." << endl;
+            sleep(2);
             return 0;
         }
     }
     else
     {
         cout << "\nUser doesnt seem to be on our database..plz check again";
+        sleep(2);
         return 0;
     }
     return rollno;
@@ -779,7 +785,13 @@ void scoreUsers(vector<User> userList, int roll)
         dashboard(roll);
     }
 
-
+#ifdef _WIN32
+    system("cls");
+#elif _WIN64
+    system("cls");
+#else
+    system("clear");
+#endif
     for (int i = 1; i < scoreList.size(); i++) // print results
     {
         cout << scoreList[i].second << endl;
