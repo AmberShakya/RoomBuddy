@@ -11,6 +11,15 @@
 //  #include <openssl/evp.h>
 
 using namespace std;
+
+unsigned int simple_hash(const std::string& str) {
+    unsigned int hash = 5381;
+    for (char c : str) {
+        hash = ((hash << 5) + hash) + c;
+    }
+    return hash;
+}
+
 string getInterest()
 {
     string hobies[] = {"basketball", "volleyball", "football", "swimming", "running", "cycling", "cricket", "chess", "Music", "Singing", "AI & machine learning", "web & app development", "computer programming", "Blockchain", "Video Games", "Traveling and exploring new places", "painting", "drawing", "photography", "graphic design", "Watching movies", "Watching series"};
