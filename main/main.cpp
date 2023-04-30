@@ -10,6 +10,7 @@
 #include <fstream>
 #include<vector>
 #include<limits>
+#include<cstring>
 
 // #include <openssl/sha.h>
 // install from https://www.openssl.org/source/
@@ -101,6 +102,7 @@ void scoreUsers(vector<User> userList, int roll);
 vector<User> getUsersFromDatabase();
 pair<string, bool> getUserInfoFromDatabase(int rollno);
 void viewMatches(int rollnum);
+void updateAvailability(int rno, bool availability);
 //
 //
 //
@@ -181,7 +183,7 @@ int login()
     }
     else
     {
-        cout << "\nUser doesnt seem to be on our database..plz check again";
+        cout << "\n\nUser doesnt seem to be on our database..plz check again";
         sleep(2);
         return 0;
     }
@@ -521,6 +523,48 @@ void initialScreen()
         dashboard(rno);
     }
 }
+
+void updateAvailability(int rno, bool availability)
+{
+    sqlite3 *db;
+    int rc = sqlite3_open("student.db", &db); // student.db is the name of the database file
+
+    if (rc)
+    {
+        sqlite3_close(db);
+        cout << "Failed to open database" << endl;
+        return;
+    }
+
+    const char *sql = "UPDATE Students SET Available = ? WHERE RollNo = ?";
+    sqlite3_stmt *stmt;
+    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    if (rc != SQLITE_OK)
+    {
+        sqlite3_close(db);
+        cout << "Failed to prepare statement" << endl;
+        return;
+    }
+
+    sqlite3_bind_int(stmt, 1, availability ? 1 : 0);
+    sqlite3_bind_int(stmt, 2, rno);
+
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE)
+    {
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        cout << "Failed to execute statement" << endl;
+        return;
+    }
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+
+    cout << "Availability updated successfully!" << endl;
+}
+
+
 void myAccount(int rno)
 {
     string hobbies[] = {"basketball", "volleyball", "football", "swimming", "running", "cycling", "cricket", "chess", "Music", "Singing", "AI & machine learning", "web & app development", "computer programming", "Blockchain", "Video Games", "Traveling and exploring new places", "painting", "drawing", "photography", "graphic design", "Watching movies", "Watching series"};
@@ -595,15 +639,24 @@ void myAccount(int rno)
 
     cout << "Availability: " << (available ? "Yes" : "No") << endl;
 
-    cout << "press 1 edit interest\npress 0 to exit:$";
+    cout << "\n\npress 1 edit interest\nPress 2 to Change Availability\npress 0 to exit:\n$";
     string a;
-    cin >> a;
+    std::cin>>a;
     if (a == "1")
     {
         string newInterest = getInterest();
         updateInterest(rno, newInterest);
         cout << "updated";
         sleep(1);
+    }
+    else if(a == "2"){
+        int t;
+        cout<<"\n1.Available\n2.Not Available:\n$";
+        cin>>t;
+        bool k = t==1?(true):(false);
+        updateAvailability(rno, k);
+        sleep(1);
+        dashboard(rno);
     }
     else
     {
