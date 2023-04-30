@@ -10,6 +10,70 @@
 // install from https://www.openssl.org/source/
 //  #include <openssl/evp.h>
 using namespace std;
+
+class User
+{
+private:
+    string name;
+    bool gender;
+    int rollno;
+    string dept;
+    string email;
+    string interests;
+    int score;
+    bool available;
+
+public:
+    User(string name, bool gender, int rollno, string dept, string email, string interests, int score, bool available)
+        : name(name), gender(gender), rollno(rollno), dept(dept), email(email), interests(interests), score(score), available(available) {}
+
+    void addScore(int points)
+    {
+        score += points;
+    }
+
+    int getScore()
+    {
+        return score;
+    }
+
+    string getUserInterests()
+    {
+        return interests;
+    }
+
+    string getName()
+    {
+        return name;
+    }
+
+    string getDept()
+    {
+        return dept;
+    }
+
+    int getRollno()
+    {
+        return rollno;
+    }
+
+    string getEmail()
+    {
+        return email;
+    }
+
+    bool isAvailable() // public member function to access the 'available' variable
+    {
+        return available;
+    }
+
+    bool hasSameGender(User otherUser) // public member function to access the 'gender' variable
+    {
+        return gender == otherUser.gender;
+    }
+};
+
+string hobies[] = {"basketball", "volleyball", "football", "swimming", "running", "cycling", "cricket", "chess", "Music", "Singing", "AI & machine learning", "web & app development", "computer programming", "Blockchain", "Video Games", "Traveling and exploring new places", "painting", "drawing", "photography", "graphic design", "Watching movies", "Watching series"};
 bool authenticate(int rollno, const string password);
 int login();
 void dashboard(int rollno);
@@ -70,7 +134,7 @@ int login()
 #endif
     int rollno;
     string password;
-
+    cout << "*****************************\n\t\tLOGIN\n\n";
     cout << "Roll No: ";
     cin >> rollno;
 
@@ -341,8 +405,8 @@ void initialScreen()
 #else
     system("clear");
 #endif
-    cout << "**********************";
-    cout << "\n1.login\n2.register0.Exit\n:";
+    cout << "**********************\n\tROOMMATE FINDER\n";
+    cout << "\n1.login\n2.register\n0.Exit\n:";
     int c;
     cin >> c;
     int rno;
@@ -360,7 +424,7 @@ void initialScreen()
     }
     else
     {
-        cout << "Thanks for using our software";
+        cout << "\n***Thanks for using our software***";
         exit(0);
     }
 
@@ -379,7 +443,7 @@ void dashboard(int rollno)
 #else
     system("clear");
 #endif
-    cout << "\n\n1.change interest/2.view match3.signout";
+    cout << "DASHBOARD \n\n1.My Account\n2.View match\n3.Signout";
     int choice;
     cin >> choice;
     if (choice == 3)
