@@ -12,13 +12,13 @@
 
 using namespace std;
 
-unsigned int simple_hash(const std::string& str) {
-    unsigned int hash = 5381;
-    for (char c : str) {
-        hash = ((hash << 5) + hash) + c;
-    }
-    return hash;
-}
+// unsigned int simple_hash(const std::string& str) {
+//     unsigned int hash = 5381;
+//     for (char c : str) {
+//         hash = ((hash << 5) + hash) + c;
+//     }
+//     return hash;
+// }
 
 string getInterest()
 {
@@ -73,6 +73,7 @@ string getInterest()
 int insertStudentData(const string name, bool gender, int rollno, const string dept,
                       const string email, const string password, const string interest, bool available)
 {
+    
     sqlite3 *db;
     int rc = sqlite3_open("student.db", &db); // student.db is the name of the database file
 
@@ -171,7 +172,7 @@ int getNewUserData()
     string email;
     int phoneNum;
     string interest = "";
-    bool available = false;
+    bool available = true;
 
     cout << "\nName: ";
     cin >> name;
@@ -256,6 +257,25 @@ int getNewUserData()
 }
 int main()
 {
+insertStudentData("Alice", false, 1, "Computer Science", "alice@example.com", "password123", "1100000100000000000000", true);
+insertStudentData("Bob", true, 2, "Mathematics", "bob@example.com", "password456", "0001000001000100000011", true);
+insertStudentData("Charlie", false, 3, "Physics", "charlie@example.com", "password789", "0000000000011010000011", true);
+insertStudentData("Eve", false, 4, "Computer Science", "eve@example.com", "password321", "1100000100000000000000", true);
+insertStudentData("Frank", true, 5, "Mathematics", "frank@example.com", "password654", "0111000000000001000000", true);
+insertStudentData("Grace", false, 6, "Physics", "grace@example.com", "password987", "0000000000011010000011", true);
+insertStudentData("Henry", true, 7, "Computer Science", "henry@example.com", "password246", "1100000100000010100000", true);
+insertStudentData("Ivy", false, 8, "Mathematics", "ivy@example.com", "password135", "0001000101000000000011", true);
+insertStudentData("John", true, 9, "Physics", "john@example.com", "password468", "0010010000100010000000", true);
+insertStudentData("Karen", false, 10, "Computer Science", "karen@example.com", "password579", "1100000100000000000000", true);
+insertStudentData("Leo", true, 11, "Mathematics", "leo@example.com", "password246", "0000101001000000000110", true);
+insertStudentData("Maggie", false, 12, "Physics", "maggie@example.com", "password135", "0001100110000000000011", true);
+insertStudentData("Nancy", false, 13, "Computer Science", "nancy@example.com", "password468", "1100000100000000000000", true);
+insertStudentData("Oscar", true, 14, "Mathematics", "oscar@example.com", "password579", "0000011100100100000011", true);
+insertStudentData("Peter", true, 15, "Physics", "peter@example.com", "password246", "0000010011001001000110", true);
+insertStudentData("Queenie", false, 16, "Computer Science", "queenie@example.com", "password135", "1100000100000000000000", true);
+insertStudentData("Robert", true, 17, "Mathematics", "robert@example.com", "password468", "0010001010010000100110", true);
+insertStudentData("Sarah", false, 18, "Physics", "sarah@example.com", "password579", "0010101000000000000011", true);
+insertStudentData("Tom", true, 19, "Computer Science", "tom@example.com", "password246", "1100000100000000000000", true);
+insertStudentData("Ursula", false, 20, "Mathematics", "ursula@example.com", "password135", "0010001100101011010001", true);
 
-    getNewUserData();
 }
