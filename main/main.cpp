@@ -648,6 +648,7 @@ void myAccount(int rno)
         updateInterest(rno, newInterest);
         cout << "updated";
         sleep(1);
+        dashboard(rno);
     }
     else if(a == "2"){
         int t;
@@ -675,6 +676,10 @@ void dashboard(int rollno)
     cout << "\tDASHBOARD \n\n1.My Account\n2.View match\n3.Signout\n$";
     int choice;
     cin >> choice;
+    while(choice<1 && choice>3){
+        cout<<"\nPlease enter valid option:";
+        cin>>choice;
+    }
     if (choice == 1)
     {
         myAccount(rollno);
@@ -687,6 +692,7 @@ void dashboard(int rollno)
     {
         initialScreen();
     }
+
 }
 void viewMatches(int rollnum)
 {
