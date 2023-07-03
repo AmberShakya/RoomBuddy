@@ -1,4 +1,4 @@
-# friend-finder
+# RoomBuddy
 
 complile with linker -lsqlite3
 table name - Students
